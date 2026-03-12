@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 WORDS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── THEME VARIABLES ── */
+:root, [data-theme="dark"] {
+  --bg:        #0b0b0f;
+  --surface:   #13131a;
+  --surface2:  #1a1a24;
+  --border:    #252530;
+  --border2:   #2e2e3e;
+  --accent:    #c8f53c;
+  --accent2:   #9fca1a;
+  --accent-g:  rgba(200,245,60,0.08);
+  --red:       #ff4d4d;
+  --green:     #3ddc84;
+  --green-g:   rgba(61,220,132,0.10);
+  --text:      #dddbe8;
+  --muted:     #5a586e;
+  --dim:       #2e2c3c;
+  --tile-bg:   #1e1e2a;
+  --tile-bdr:  #2e2e3e;
+  --tile-hvr:  #252532;
+  --modal-bg:  #13131a;
+  --overlay:   rgba(5,5,10,0.93);
+  --shadow:    rgba(0,0,0,0.55);
+}
+[data-theme="light"] {
+  --bg:        #f4f3ef;
+  --surface:   #ffffff;
+  --surface2:  #f0efe9;
+  --border:    #dddbd2;
+  --border2:   #c8c6bb;
+  --accent:    #5a8a00;
+  --accent2:   #4a7200;
+  --accent-g:  rgba(90,138,0,0.08);
+  --red:       #cc2200;
+  --green:     #1a8c4e;
+  --green-g:   rgba(26,140,78,0.08);
+  --text:      #1a1914;
+  --muted:     #7a7868;
+  --dim:       #b0ae9f;
+  --tile-bg:   #f8f7f2;
+  --tile-bdr:  #d5d3c8;
+  --tile-hvr:  #eeecea;
+  --modal-bg:  #ffffff;
+  --overlay:   rgba(200,198,190,0.90);
+  --shadow:    rgba(0,0,0,0.12);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;overflow-x:hidden;
+  transition:background .3s,color .3s;
+}
+[data-theme="dark"] body::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+  pointer-events:none;z-index:9998;
+}
+
+/* ── OVERLAYS ── */
+.overlay{display:none;position:fixed;inset:0;background:var(--overlay);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.overlay.open{display:flex;}
+.modal{
+  background:var(--modal-bg);border:1px solid var(--border2);
+  border-top:3px solid var(--accent);
+  padding:40px 48px 46px;max-width:520px;width:calc(100% - 32px);
+  animation:modalIn .25s ease;max-height:90vh;overflow-y:auto;
+}
+@keyframes modalIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.modal-kicker{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent2);margin-bottom:12px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:70px;line-height:.9;color:var(--text);margin-bottom:10px;letter-spacing:.04em;}
+.modal-title span{color:var(--accent);}
+.modal-sub{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:28px;}
+.how-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.how-item{background:var(--surface2);border:1px solid var(--border);padding:12px 14px;display:flex;gap:10px;align-items:flex-start;}
+.how-n{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);border:1px solid var(--accent2);min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--accent-g);}
+.how-t{font-size:11px;color:var(--muted);line-height:1.5;}
+.seed-badge{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:24px;}
+.seed-badge strong{color:var(--accent2);}
+
+/* ── BUTTONS ── */
+.btn{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;padding:12px 28px;cursor:pointer;border:none;border-radius:1px;transition:all .15s;display:inline-block;text-decoration:none;}
+.btn-main{background:var(--accent);color:var(--bg);font-weight:500;}
+.btn-main:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 6px 20px var(--shadow);}
+
+/* ── END SCREEN ── */
+.end-score{font-family:'Bebas Neue',sans-serif;font-size:92px;line-height:1;color:var(--accent);letter-spacing:.02em;}
+.end-score.green{color:var(--green);}
+.end-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+
+/* Stars */
+.stars-row{display:flex;justify-content:center;gap:7px;margin-bottom:18px;}
+.star{font-size:26px;color:var(--border2);transition:color .3s,transform .3s;}
+.star.filled{color:var(--accent);animation:starPop .4s ease backwards;}
+.star.filled:nth-child(1){animation-delay:.05s}
+.star.filled:nth-child(2){animation-delay:.12s}
+.star.filled:nth-child(3){animation-delay:.19s}
+.star.filled:nth-child(4){animation-delay:.26s}
+.star.filled:nth-child(5){animation-delay:.33s}
+.star.filled:nth-child(6){animation-delay:.40s}
+@keyframes starPop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.4)}100%{transform:scale(1);opacity:1}}
+
+/* Words reveal */
+.words-reveal{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:20px;}
+.reveal-word{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--border2);color:var(--muted);background:var(--surface2);}
+.reveal-word.got{border-color:var(--green);color:var(--green);background:var(--green-g);}
+
+/* Share buttons */
+.share-section{margin-bottom:22px;}
+.share-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.share-buttons{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;}
+.share-btn{
+  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;
+  padding:8px 13px;border:1px solid var(--border2);background:var(--surface2);
+  color:var(--muted);cursor:pointer;text-decoration:none;
+  transition:all .15s;display:inline-block;border-radius:1px;
+}
+.share-btn:hover{border-color:var(--accent2);color:var(--accent);background:var(--accent-g);}
+.share-btn.s-fb:hover   {border-color:#1877f2;color:#1877f2;background:rgba(24,119,242,.06);}
+.share-btn.s-tw:hover   {border-color:#1da1f2;color:#1da1f2;background:rgba(29,161,242,.06);}
+.share-btn.s-wa:hover   {border-color:#25d366;color:#25d366;background:rgba(37,211,102,.06);}
+.share-btn.s-rd:hover   {border-color:#ff4500;color:#ff4500;background:rgba(255,69,0,.06);}
+
+/* ── HEADER ── */
+header{border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:10;}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.1em;color:var(--text);}
+.logo span{color:var(--accent);}
+.header-right{display:flex;align-items:center;gap:16px;}
+.hud{display:flex;align-items:center;gap:24px;}
+.hud-item{text-align:right;}
+.hud-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);display:block;}
+.hud-val{font-family:'DM Mono',monospace;font-size:21px;font-weight:500;line-height:1;color:var(--accent);letter-spacing:.03em;}
+.hud-val.neutral{color:var(--text);}
+.hud-val.green  {color:var(--green);}
+.hud-val.warn   {color:#f0a500;}
+.hud-val.danger {color:var(--red);animation:blink .65s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* Theme toggle */
+.theme-toggle{font-size:15px;background:none;border:1px solid var(--border2);color:var(--muted);cursor:pointer;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:2px;transition:all .15s;flex-shrink:0;}
+.theme-toggle:hover{border-color:var(--accent2);color:var(--accent);}
+
+/* Timer bar */
+.tbar{height:2px;background:var(--border);}
+.tbar-fill{height:100%;background:var(--accent);width:100%;transition:width 1s linear;}
+[data-theme="dark"] .tbar-fill{box-shadow:0 0 8px rgba(200,245,60,.5);}
+
+/* ── MAIN ── */
+main{max-width:980px;margin:0 auto;padding:24px 20px 60px;position:relative;z-index:10;}
+.game-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:6px;}
+.game-top-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);}
+.progress-text{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);}
+.progress-text strong{color:var(--green);}
+
+/* Pool */
+.pool-wrap,.targets-wrap{border:1px solid var(--border);background:var(--surface);overflow:hidden;}
+.targets-wrap{margin-top:14px;}
+.pool-header,.targets-header{padding:8px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.pool-header-label,.targets-header-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);}
+.pool-header-hint{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;color:var(--dim);}
+.pool-row{display:flex;align-items:center;min-height:54px;border-bottom:1px solid var(--border);padding:7px 10px 7px 14px;transition:background .2s;}
+.pool-row:last-child{border-bottom:none;}
+.row-idx{font-family:'DM Mono',monospace;font-size:9px;color:var(--dim);width:22px;flex-shrink:0;user-select:none;}
+.row-tiles{display:flex;flex-wrap:wrap;gap:5px;flex:1;align-items:center;min-height:36px;}
+
+/* Tiles */
+.tile{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;padding:6px 10px;background:var(--tile-bg);border:1px solid var(--tile-bdr);color:var(--text);cursor:pointer;user-select:none;transition:all .12s;}
+.tile:hover{background:var(--tile-hvr);border-color:var(--accent2);transform:translateY(-1px);box-shadow:0 4px 14px var(--shadow);}
+.tile.selected{background:var(--accent-g);border-color:var(--accent);color:var(--accent);box-shadow:0 0 0 1px var(--accent),0 4px 18px rgba(200,245,60,.18);transform:translateY(-2px);}
+
+/* Target rows */
+.target-row{display:flex;align-items:center;min-height:50px;border-bottom:1px solid var(--border);padding:7px 14px;gap:10px;transition:background .2s;}
+.target-row:last-child{border-bottom:none;}
+.target-row.solved{background:var(--green-g);border-left:3px solid var(--green);}
+.target-idx{font-family:'DM Mono',monospace;font-size:9px;color:var(--dim);width:22px;flex-shrink:0;}
+.target-slots{display:flex;gap:5px;flex:1;align-items:center;flex-wrap:wrap;}
+.target-slot{font-family:'DM Mono',monospace;font-size:13px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;padding:5px 9px;border:1px dashed var(--border2);color:var(--dim);min-width:36px;text-align:center;transition:all .15s;cursor:pointer;user-select:none;}
+.target-slot.filled{border-style:solid;border-color:var(--tile-bdr);color:var(--text);background:var(--tile-bg);}
+.target-slot.filled:hover{border-color:var(--accent2);background:var(--tile-hvr);}
+.target-slot.filled.selected{border-color:var(--accent);color:var(--accent);background:var(--accent-g);box-shadow:0 0 0 1px var(--accent);}
+.target-slot.solved-slot{border-style:solid;border-color:rgba(61,220,132,.35);color:var(--green);background:var(--green-g);cursor:default;}
+.target-slot.empty:hover{border-color:var(--accent2);}
+.target-len{font-family:'DM Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:.1em;width:22px;flex-shrink:0;}
+.target-check{font-size:14px;color:var(--green);width:22px;text-align:center;flex-shrink:0;opacity:0;transition:opacity .3s;}
+.target-row.solved .target-check{opacity:1;}
+
+/* Selection status */
+.sel-status{margin-top:12px;padding:10px 16px;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;gap:12px;min-height:42px;transition:border-color .2s,background .2s;}
+.sel-status.has-sel{border-color:var(--accent2);background:var(--accent-g);}
+.sel-preview{font-family:'DM Mono',monospace;font-size:15px;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);flex-shrink:0;}
+.sel-hint{font-size:11px;color:var(--muted);line-height:1.4;}
+
+/* Confetti */
+.confetti{position:fixed;pointer-events:none;z-index:9997;border-radius:1px;animation:cfall var(--d) ease-in var(--dl) both;}
+@keyframes cfall{0%{transform:translateY(-10px) rotate(0);opacity:1}100%{transform:translateY(110vh) rotate(var(--r));opacity:0}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  header{padding:0 12px;height:50px;}
+  .logo{font-size:23px;}
+  .hud{gap:12px;}
+  .hud-val{font-size:17px;}
+  .hud-label{font-size:7px;}
+  main{padding:14px 10px 48px;}
+  .modal{padding:28px 18px 32px;}
+  .modal-title{font-size:52px;}
+  .how-grid{grid-template-columns:1fr;gap:8px;}
+  .end-score{font-size:70px;}
+  .star{font-size:21px;}
+  .tile,.target-slot{font-size:11px;padding:5px 7px;}
+  .pool-row,.target-row{min-height:46px;padding:5px 8px;}
+  .share-buttons{gap:5px;}
+  .share-btn{font-size:9px;padding:7px 10px;}
+  .game-top{flex-direction:column;align-items:flex-start;}
+  .sel-status{flex-direction:column;align-items:flex-start;gap:4px;}
+}
+@media(max-width:400px){
+  .hud{gap:8px;}
+  .hud-val{font-size:15px;}
+  .how-grid{gap:6px;}
+}
+</style>
+</head>
+<body>
+
+<!-- START OVERLAY -->
+<div class="overlay open" id="startOverlay">
+  <div class="modal">
+    <div class="modal-kicker">Hourly Word Puzzle — Medium · 10 Unique Lengths</div>
+    <div class="modal-title">10 <span>WORDS</span></div>
+    <div class="modal-sub">10 words, all fragments scrambled across every row. Pick fragments from the pool and place them into the word slots. Solve all 10 before time runs out.</div>
+    <div class="how-grid">
+      <div class="how-item"><div class="how-n">1</div><div class="how-t">Click a fragment in the pool to select it</div></div>
+      <div class="how-item"><div class="how-n">2</div><div class="how-t">Click an empty slot in the word panel to place it</div></div>
+      <div class="how-item"><div class="how-n">3</div><div class="how-t">Click a filled slot to pick it back up or swap it</div></div>
+      <div class="how-item"><div class="how-n">4</div><div class="how-t">Double-click a filled slot to return it to the pool</div></div>
+    </div>
+    <div class="seed-badge">Hourly puzzle seed: <strong id="seedDisplay">—</strong></div>
+    <button class="btn btn-main" id="startBtn">Begin Puzzle</button>
+  </div>
+</div>
+
+<!-- END OVERLAY -->
+<div class="overlay" id="endOverlay">
+  <div class="modal">
+    <div class="modal-kicker" id="endKicker">Round Over</div>
+    <div class="modal-title" id="endTitle">10 <span>WORDS</span></div>
+    <div class="modal-sub" id="endSub"></div>
+    <div class="end-score" id="endScore">0</div>
+    <div class="end-label" id="endLabel">POINTS</div>
+    <div class="stars-row" id="endStars"></div>
+    <div class="words-reveal" id="wordsReveal"></div>
+    <div class="share-section">
+      <div class="share-label">Share your result</div>
+      <div class="share-buttons">
+        <a class="share-btn s-fb" id="shareFB"  href="#" target="_blank" rel="noopener">Facebook</a>
+        <a class="share-btn s-tw" id="shareTW"  href="#" target="_blank" rel="noopener">Twitter / X</a>
+        <a class="share-btn s-wa" id="shareWA"  href="#" target="_blank" rel="noopener">WhatsApp</a>
+        <a class="share-btn s-rd" id="shareRD"  href="#" target="_blank" rel="noopener">Reddit</a>
+        <button class="share-btn" id="shareCopy">Copy Link</button>
+      </div>
+    </div>
+    <button class="btn btn-main" id="restartBtn">Play Again</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">10 <span>WORDS</span></div>
+  <div class="header-right">
+    <div class="hud">
+      <div class="hud-item"><span class="hud-label">Solved</span><span class="hud-val neutral" id="hudSolved">0/10</span></div>
+      <div class="hud-item"><span class="hud-label">Score</span><span class="hud-val" id="hudScore">—</span></div>
+      <div class="hud-item"><span class="hud-label">Time</span><span class="hud-val" id="hudTimer">10:00</span></div>
+    </div>
+    <button class="theme-toggle" id="themeToggle" title="Switch theme" aria-label="Toggle light/dark theme">☀</button>
+  </div>
+</header>
+<div class="tbar"><div class="tbar-fill" id="tbarFill"></div></div>
+
+<!-- MAIN -->
+<main>
+  <div class="game-top">
+    <span class="game-top-hint">Select a fragment · place it into a word slot below</span>
+    <span class="progress-text">Solved: <strong id="solvedCount">0</strong> / 10</span>
+  </div>
+  <div class="pool-wrap">
+    <div class="pool-header">
+      <span class="pool-header-label">Fragment Pool</span>
+      <span class="pool-header-hint">All word fragments — scrambled across rows</span>
+    </div>
+    <div id="poolRows"></div>
+  </div>
+  <div class="targets-wrap">
+    <div class="targets-header">
+      <span class="targets-header-label">Word Assembly — sorted shortest to longest</span>
+    </div>
+    <div id="targetRows"></div>
+  </div>
+  <div class="sel-status" id="selStatus">
+    <span class="sel-hint">Click any fragment in the pool to select it, then click a slot to place it</span>
+  </div>
+</main>
+
+<script>
+// ══════════════════════════════════════════
+// WORD BANK
+// ══════════════════════════════════════════
+const WORDBANK = [
+  // 6 letters
+  "BRIDGE","CARBON","CASTLE","CHANGE","CHARGE","CHOICE","CIRCLE","CLOSED",
+  "DANGER","DEBATE","DESIGN","DIRECT","DIVIDE","DOLLAR","EFFECT","EFFORT",
+  "EMPLOY","ENERGY","ENGAGE","ESCAPE","FABRIC","FINGER","FLIGHT","FUTURE",
+  "GARDEN","GLOBAL","GOLDEN","GROUND","HANDLE","HAPPEN","HARBOR","INSIDE",
+  "ISLAND","JUNGLE","JUNIOR","LAUNCH","LEADER","LESSON","LISTEN","LIVING",
+  "MARKET","MASTER","MATTER","MENTAL","METHOD","MIDDLE","MIRROR","MODERN",
+  "NATION","NATURE","NOTICE","OBJECT","OFFICE","ONLINE","ORANGE","ORIGIN",
+  "PENCIL","PLANET","PLAYER","POCKET","POLICE","PORTAL","PRINCE","PRISON",
+  "PROFIT","REGION","REPAIR","RETURN","REVEAL","REWARD","RISING","ROCKET",
+  "SAFETY","SAMPLE","SENIOR","SERIAL","SIGNAL","SILVER","SIMPLE","SINGLE",
+  "SOCIAL","SOURCE","SPIRIT","SPRING","SQUARE","STABLE","STATUE","STREAM",
+  "STRIKE","STRONG","STUDIO","SUMMER","SUNSET","SUPPLY","SWITCH","SYSTEM",
+  "TALENT","TARGET","TEMPLE","THRONE","TICKET","TIMING","TISSUE","TRAVEL",
+  "TUNNEL","VALLEY","VENDOR","VICTOR","VISION","VOLUME","WONDER","YELLOW",
+  // 7 letters
+  "ABANDON","ABILITY","ABSENCE","ACCOUNT","ACHIEVE","ACQUIRE","CHAPTER","ARRANGE",
+  "ATTEMPT","BALANCE","CAPTAIN","CABINET","CERTAIN","COLLECT","COMBINE","COMFORT",
+  "COMMAND","COMPARE","COMPLEX","CONCERN","CONTACT","CONTAIN","CONTEST","CONTROL",
+  "CONVERT","CORRECT","COUNTRY","COURAGE","CULTURE","CURRENT","DECIDED","DEFAULT",
+  "DEFENSE","DELIVER","DESPITE","DEVELOP","DIGITAL","DISCUSS","DISPLAY","DISTANT",
+  "DIVERSE","SUGGEST","EXAMINE","EXAMPLE","EXPLAIN","EXPLORE","EXPRESS","EXTREME",
+  "FASHION","FEATURE","FICTION","FORWARD","FREEDOM","FULFILL","GENERAL","GENUINE",
+  "GROWING","HARVEST","HISTORY","HUNDRED","IMAGINE","IMPROVE","INCLUDE","MENTION",
+  "MILLION","MISSING","MORNING","NATURAL","NEITHER","NETWORK","NOTHING","OBVIOUS",
+  "OPINION","OUTSIDE","PATTERN","PERFECT","PERHAPS","PICTURE","PLASTIC","PREPARE",
+  "PREVENT","PROBLEM","PRODUCE","PROJECT","PROTECT","PURPOSE","QUALIFY","QUICKLY",
+  "REALIZE","RECEIVE","REFLECT","RELEASE","REPLACE","RESOLVE","RESPECT","RESTORE",
+  "RESULTS","REQUIRE","SATISFY","SCIENCE","SECTION","SERIOUS","SERVICE","SEVERAL",
+  "SILENCE","SIMILAR","SOCIETY","SOMEONE","SPECIAL","STATION","STRANGE","STUDENT",
+  "SUCCESS","SUPPORT","SUSPECT","THROUGH","TROUBLE","TURNING","UNUSUAL","VILLAGE",
+  "WELCOME","WHETHER","WHISPER","WITHOUT","WRITING",
+  // 8 letters
+  "ABSOLUTE","ABSTRACT","ACCIDENT","ACCURATE","ACTIVATE","ADDITION","ADEQUATE","ADOPTION",
+  "ADVANCED","AMBITION","ANALYSIS","APPROACH","APPROVAL","ARGUMENT","ATTITUDE","AUDIENCE",
+  "ALTHOUGH","BIRTHDAY","BREAKING","BUILDING","BUSINESS","CALENDAR","CAMPAIGN","CATEGORY",
+  "CHAMPION","CHEMICAL","COLLAPSE","COMPLETE","COMPOUND","COMPRISE","CONSIDER","CONTRACT",
+  "CONVINCE","DATABASE","DAUGHTER","DECISION","DELIVERY","DESCRIBE","DIALOGUE","DIRECTLY",
+  "DISCOVER","DISTINCT","DOCUMENT","DOMINANT","DRAMATIC","ECONOMIC","ELECTION","EMPLOYED",
+  "ENTRANCE","EVALUATE","EVENTUAL","EVIDENCE","EXERCISE","FAMILIAR","FEELINGS","FINISHED",
+  "FOOTBALL","FUNCTION","GENERATE","GRATEFUL","GUIDANCE","HAPPENED","HOSPITAL","IDENTIFY",
+  "IMAGINED","INCREASE","INDUSTRY","INTEREST","INTERNAL","LANGUAGE","LEARNING","MAINTAIN",
+  "MARRIAGE","MATERIAL","MEDICINE","MODERATE","MOREOVER","MOUNTAIN","MOVEMENT","NATIONAL",
+  "NEGATIVE","OBSERVED","OCCUPIED","OFFICIAL","OPPONENT","ORDINARY","ORGANIZE","ORIGINAL",
+  "OVERCOME","PATIENCE","PERSONAL","PHYSICAL","PLEASANT","POSITION","POSITIVE","POSSIBLE",
+  "POWERFUL","PRACTICE","PRESSURE","PREVIOUS","PRINTING","PROBABLY","PROGRESS","PROPERTY",
+  "PROVIDED","QUESTION","REACTION","RECENTLY","RELATIVE","RESEARCH","RESPONSE","SECURITY",
+  "SENTENCE","SEPARATE","SEQUENCE","SHORTAGE","SLIGHTLY","SOMEBODY","SPECIFIC","STANDARD",
+  "STRENGTH","SUDDENLY","TOGETHER","TREASURE","ULTIMATE","UMBRELLA","VACATION","VARIABLE",
+  "VIOLENCE","WHATEVER","WHEREVER","GIGANTIC",
+  // 9 letters
+  "STRUCTURE","ABUNDANCE","ADVANTAGE","AGREEMENT","ALONGSIDE","AMBITIOUS","AMENDMENT","APPETIZER",
+  "ATTENTION","BEAUTIFUL","CELEBRATE","CHALLENGE","CHARACTER","COGNITIVE","COMMITTED","COMMUNITY",
+  "CORPORATE","CUSTOMIZE","DANGEROUS","ELABORATE","EMOTIONAL","EMPHASIZE","ENCOUNTER","ESTABLISH",
+  "EXCELLENT","EXPANSION","EXPERTISE","FANTASTIC","FINANCIAL","FORGOTTEN","FRAMEWORK","GEOGRAPHY",
+  "GRADUATED","GUARANTEE","GUIDELINE","HIGHLIGHT","HOUSEHOLD","INFLUENCE","INITIALLY","INTEGRITY",
+  "INVENTION","LANDSCAPE","LISTENING","MARKETING","MECHANISM","MENTIONED","NARRATIVE","NECESSARY",
+  "OBJECTIVE","OBSERVANT","OPERATION","OWNERSHIP","PARAMETER","PASSENGER","PENINSULA","PERFORMER",
+  "PERMITTED","PHENOMENA","POTENTIAL","PRINCIPLE","PRIVILEGE","PROCEDURE","RECOGNIZE","RECOMMEND",
+  "RECORDING","RECYCLING","REDUCTION","REFERENCE","REMAINING","RENEWABLE","REPRESENT","RESISTANT",
+  "RETURNING","SATISFIED","SENSITIVE","SITUATION","SOLUTIONS","SOMETHING","STRATEGIC","SURPRISED",
+  "TRANSLATE","TRAVELING","TREATMENT","TYPICALLY","UNIVERSAL","VIRTUALLY","VOLUNTEER","WORLDWIDE",
+  "THRESHOLD",
+  // 10 letters
+  "ABSOLUTELY","ACCOMPLISH","ACCUMULATE","ADJUSTMENT","ADMIRATION","ATMOSPHERE","BANKRUPTCY","BIRTHPLACE",
+  "CAPABILITY","CENTRALIZE","COLLECTION","COMMERCIAL","COMMITMENT","COMPLETELY","COMPLIMENT","COMPRESSED",
+  "CONFERENCE","CONFIDENCE","CONNECTION","CONVENIENT","CREATIVITY","DEDICATION","DEPENDENCY","DETERMINED",
+  "DIFFERENCE","DIFFICULTY","DISCIPLINE","DISCUSSION","DISTRIBUTE","EARTHQUAKE","EFFICIENCY","EMPLOYMENT",
+  "ENGAGEMENT","EXCITEMENT","EXHAUSTION","EXPERIENCE","EXPRESSION","FOUNDATION","FRIENDSHIP","GENERATION",
+  "GOVERNMENT","GRADUATION","HYPOTHESIS","ILLUSTRATE","IMPORTANCE","IMPRESSION","INCREDIBLE","INCREASING",
+  "INDICATION","INDIVIDUAL","INEQUALITY","INSTRUCTOR","INVESTMENT","LEADERSHIP","LIBERATION","LIKELIHOOD",
+  "MANAGEMENT","MEDITATION","MEMORANDUM","MODERNIZED","MOTIVATION","NAVIGATION","OCCASIONAL","OCCUPATION",
+  "OCCURRENCE","OPPOSITION","POPULATION","PRESIDENCY","PROTECTION","PSYCHOLOGY","REGULATION","REPUTATION",
+  "RESISTANCE","RESOLUTION","REVOLUTION","SKATEBOARD","SOLIDARITY","STEREOTYPE","SUBMISSION","SUCCESSION",
+  "SUGGESTION","SURROUNDED","TECHNOLOGY","TELEVISION","TRAJECTORY","TRANSITION","UNIFORMITY","VEGETATION",
+  "WAVELENGTH",
+  // 11 letters
+  "FULFILLMENT","ACKNOWLEDGE","ANNIVERSARY","APPOINTMENT","ARRANGEMENT","CATASTROPHE","CELEBRATION","COMFORTABLE",
+  "COMMUNICATE","COMPETITION","COMPLICATED","COMPOSITION","COMPRESSION","COMPUTATION","CONCENTRATE","CONSIDERING",
+  "CONSISTENCY","COOPERATION","CORPORATION","CORRECTNESS","CORRELATION","DESCRIPTION","DEVELOPMENT","DISCOGRAPHY",
+  "EXPLORATION","FASCINATING","IMAGINATION","IMMIGRATION","IMPROVEMENT","INDEPENDENT","INSPIRATION","INTEGRATION",
+  "INTERACTION","INVOLVEMENT","MARKETPLACE","MEASUREMENT","POSSIBILITY","PREPARATION","PROBABILITY","PUBLICATION",
+  "RECOGNITION","REPLACEMENT","RESTRICTION","SCHOLARSHIP","SPECULATION","TEMPERATURE","TRANSACTION","TRANSLATION",
+  "UNCERTAINTY","VOLUNTARILY","WORKMANSHIP","REESTABLISH","EMPOWERMENT",
+  // 12 letters
+  "ACCOMPLISHED","ANNOUNCEMENT","ARCHITECTURE","CHAMPIONSHIP","CIVILIZATION","COMMISSIONER","CONTEMPORARY","CONTRIBUTION",
+  "CONVERSATION","COORDINATING","DELIBERATELY","DISAGREEMENT","DISTRIBUTION","ELECTRIFYING","EXAGGERATION","EXPERIMENTAL",
+  "HUMANITARIAN","ILLUSTRATION","IMMUNIZATION","INDEPENDENCE","JURISDICTION","MANUFACTURER","NEGOTIATIONS","OBSERVATIONS",
+  "ORGANIZATION","OVERWHELMING","PERSEVERANCE","POLARIZATION","PROCLAMATION","PRODUCTIVITY","SATISFACTION","SIGNIFICANCE",
+  "SPOKESPERSON","THUNDERSTORM","UNBELIEVABLE","VERIFICATION","DISSATISFIED",
+  // 13 letters
+  "COLLABORATION","DISAPPOINTING","ENTERTAINMENT","ESTABLISHMENT","GLOBALIZATION","PHOTOGRAPHERS","SOPHISTICATED","ADVERTISEMENT",
+  "APPROXIMATELY","AUTOMATICALLY","COMMUNICATION","COMPREHENSIVE","CONCENTRATION","DEMONSTRATION","DETERMINATION","DIFFERENTIATE",
+  "EMBARRASSMENT","EXTRAORDINARY","INCORPORATION","INDIVIDUALISM","INTERNATIONAL","INVESTIGATION","MANIFESTATION","OPPORTUNITIES",
+  "PARTICIPATION","PRONUNCIATION","QUALIFICATION","RELATIONSHIPS","REVOLUTIONARY","TECHNOLOGICAL","UNDERSTANDING","UNFORTUNATELY",
+  "VULNERABILITY",
+  // 14 letters
+  "ACCOMPLISHMENT","ADMINISTRATION","AUTHENTICATION","CHARACTERIZING","CLASSIFICATION","COMMUNICATIONS","CONFIGURATIONS","CONGRATULATION",
+  "CONSIDERATIONS","CONTRADICTIONS","DECENTRALIZING","DIFFERENTIATED","ESTABLISHMENTS","IDENTIFICATION","IMPLEMENTATION","INFRASTRUCTURE",
+  "INVESTIGATIONS","TRANSPORTATION","VISUALIZATIONS",
+  // 15 letters
+  "DISSATISFACTION","ELECTROMAGNETIC","EXPERIMENTATION","HOSPITALIZATION","INDIVIDUALISTIC","REPRESENTATIONS","STANDARDIZATION","TRANSFORMATIONS",
+  "ACCOMPLISHMENTS","ACKNOWLEDGEMENT","CLASSIFICATIONS","CONGRATULATIONS","CONSCIENTIOUSLY","DECONTAMINATION","IMPLEMENTATIONS","INDUSTRIALIZING",
+  "INTERPRETATIONS","REPRESENTATIVES","STRAIGHTFORWARD",
+];
+
+// ══════════════════════════════════════════
+// SEEDED RNG (mulberry32)
+// ══════════════════════════════════════════
+function rng32(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(s ^ s >>> 15, 1 | s);
+    t = (t + Math.imul(t ^ t >>> 7, 61 | t)) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function getHourlySeed() {
+  const n = new Date();
+  return n.getFullYear() * 1000000 + (n.getMonth()+1) * 10000 + n.getDate() * 100 + n.getHours();
+}
+
+function seededShuffle(arr, rand) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(rand() * (i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ══════════════════════════════════════════
+// WORD BREAKING
+// ══════════════════════════════════════════
+function breakWord(word, rand) {
+  const parts = [];
+  let i = 0;
+  while (i < word.length) {
+    const left = word.length - i;
+    let size;
+    if (left <= 3) { size = left; }
+    else if (left === 4) { size = 4; }
+    else if (left === 5) { size = rand() < 0.5 ? 2 : 3; }
+    else if (left === 6) { size = 3; }
+    else {
+      size = rand() < 0.55 ? 3 : 4;
+      if (left - size === 1) size = size === 4 ? 3 : 4;
+      if (left - size === 1) size = left;
+    }
+    size = Math.max(1, Math.min(size, left));
+    parts.push(word.slice(i, i + size));
+    i += size;
+  }
+  return parts;
+}
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let words       = [];
+let solution    = [];
+let frags       = [];
+let poolRows    = [];
+let targetSlots = [];
+let solvedWords = new Set();
+let selection   = null;
+let timeLeft    = 600;
+let timerRef    = null;
+let gameActive  = false;
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.getElementById('startBtn').onclick   = () => { document.getElementById('startOverlay').classList.remove('open'); initGame(); };
+document.getElementById('restartBtn').onclick = () => { document.getElementById('endOverlay').classList.remove('open'); clearInterval(timerRef); initGame(); };
+
+function initGame() {
+  const seed = getHourlySeed();
+  document.getElementById('seedDisplay').textContent = '#' + seed;
+
+  // Pick one word per length (6–15), then sort ascending by length (change 1)
+  words = [];
+  for (let len = 6; len <= 15; len++) {
+    const candidates = [...new Set(WORDBANK.filter(w => w.length === len))];
+    const shuffled   = seededShuffle(candidates, rng32(seed + len * 17));
+    if (shuffled.length > 0) words.push(shuffled[0]);
+  }
+  // CHANGE 1: sort ascending by word length (shortest → longest)
+  words.sort((a, b) => a.length - b.length);
+
+  solution    = words.map((w, wi) => breakWord(w, rng32(seed + wi + 1)));
+  frags       = [];
+  solution.forEach((parts, wi) => parts.forEach((text, pi) => frags.push({ id: `f${wi}_${pi}`, wordIdx: wi, partIdx: pi, text })));
+
+  const shuffledIds = seededShuffle(frags.map(f => f.id), rng32(seed + 999));
+  poolRows          = Array.from({ length: 10 }, () => []);
+  shuffledIds.forEach((fid, i) => poolRows[i % 10].push(fid));
+  poolRows          = poolRows.map((row, ri) => seededShuffle(row, rng32(seed + ri + 500)));
+  targetSlots       = solution.map(parts => parts.map(() => null));
+
+  solvedWords.clear();
+  selection  = null;
+  gameActive = true;
+  timeLeft   = 600;
+
+  renderPool(); renderTargets(); updateHUD(); updateSelStatus(); startTimer();
+}
+
+// ══════════════════════════════════════════
+// RENDER POOL
+// ══════════════════════════════════════════
+function renderPool() {
+  const container = document.getElementById('poolRows');
+  container.innerHTML = '';
+  const inTarget = new Set(targetSlots.flat().filter(Boolean));
+
+  poolRows.forEach((rowFragIds, ri) => {
+    const visible = rowFragIds.filter(fid => !inTarget.has(fid));
+    const row     = document.createElement('div');
+    row.className = 'pool-row';
+
+    const idxEl = document.createElement('div');
+    idxEl.className   = 'row-idx';
+    idxEl.textContent = String(ri+1).padStart(2,'0');
+    row.appendChild(idxEl);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'row-tiles';
+    visible.forEach(fid => {
+      const frag  = frags.find(f => f.id === fid);
+      if (!frag) return;
+      const isSel = selection && selection.source === 'pool' && selection.fragId === fid;
+      const tile  = document.createElement('div');
+      tile.className   = 'tile' + (isSel ? ' selected' : '');
+      tile.textContent = frag.text;
+      tile.addEventListener('click', () => onPoolTileClick(fid));
+      wrap.appendChild(tile);
+    });
+
+    row.appendChild(wrap);
+    container.appendChild(row);
+  });
+}
+
+// ══════════════════════════════════════════
+// RENDER TARGETS
+// ══════════════════════════════════════════
+function renderTargets() {
+  const container = document.getElementById('targetRows');
+  container.innerHTML = '';
+
+  words.forEach((word, wi) => {
+    const isSolved = solvedWords.has(wi);
+    const row      = document.createElement('div');
+    row.className  = 'target-row' + (isSolved ? ' solved' : '');
+
+    const idx = document.createElement('div');
+    idx.className   = 'target-idx';
+    idx.textContent = String(wi+1).padStart(2,'0');
+    row.appendChild(idx);
+
+    const slots = document.createElement('div');
+    slots.className = 'target-slots';
+    solution[wi].forEach((_, si) => {
+      const fragId = targetSlots[wi][si];
+      const frag   = fragId ? frags.find(f => f.id === fragId) : null;
+      const isSel  = selection && selection.source === 'target' && selection.wordIdx === wi && selection.slotIdx === si;
+
+      const slot = document.createElement('div');
+      if (isSolved) {
+        slot.className   = 'target-slot solved-slot';
+        slot.textContent = frag ? frag.text : '';
+      } else if (frag) {
+        slot.className   = 'target-slot filled' + (isSel ? ' selected' : '');
+        slot.textContent = frag.text;
+        slot.title       = 'Click to select · double-click to return to pool';
+        slot.addEventListener('click',    () => onTargetSlotClick(wi, si));
+        slot.addEventListener('dblclick', () => returnToPool(wi, si));
+      } else {
+        slot.className   = 'target-slot empty';
+        slot.textContent = '·';
+        slot.addEventListener('click', () => onTargetSlotClick(wi, si));
+      }
+      slots.appendChild(slot);
+    });
+    row.appendChild(slots);
+
+    const lenHint = document.createElement('div');
+    lenHint.className   = 'target-len';
+    lenHint.textContent = isSolved ? '' : `${word.length}`;
+    row.appendChild(lenHint);
+
+    const chk = document.createElement('div');
+    chk.className   = 'target-check';
+    chk.textContent = '✓';
+    row.appendChild(chk);
+
+    container.appendChild(row);
+  });
+}
+
+// ══════════════════════════════════════════
+// INTERACTIONS
+// ══════════════════════════════════════════
+function returnToPool(wi, si) {
+  if (!gameActive || solvedWords.has(wi)) return;
+  targetSlots[wi][si] = null;
+  selection = null;
+  updateHUD(); updateSelStatus(); renderPool(); renderTargets();
+}
+
+function onPoolTileClick(fragId) {
+  if (!gameActive) return;
+  if (selection && selection.source === 'pool' && selection.fragId === fragId) {
+    selection = null; updateSelStatus(); renderPool(); renderTargets(); return;
+  }
+  if (selection && selection.source === 'target') {
+    const { wordIdx: wi, slotIdx: si } = selection;
+    targetSlots[wi][si] = fragId;
+    selection = null;
+    checkWordSolved(wi);
+    updateHUD(); updateSelStatus(); renderPool(); renderTargets(); return;
+  }
+  selection = { source: 'pool', fragId };
+  updateSelStatus(); renderPool(); renderTargets();
+}
+
+function onTargetSlotClick(wi, si) {
+  if (!gameActive || solvedWords.has(wi)) return;
+  const slotHasFrag = targetSlots[wi][si] !== null;
+
+  if (selection && selection.source === 'pool') {
+    targetSlots[wi][si] = selection.fragId;
+    selection = null;
+    checkWordSolved(wi);
+    updateHUD(); updateSelStatus(); renderPool(); renderTargets(); return;
+  }
+  if (selection && selection.source === 'target') {
+    const { wordIdx: swi, slotIdx: ssi } = selection;
+    if (swi === wi && ssi === si) {
+      selection = null; updateSelStatus(); renderPool(); renderTargets(); return;
+    }
+    [targetSlots[swi][ssi], targetSlots[wi][si]] = [targetSlots[wi][si], targetSlots[swi][ssi]];
+    selection = null;
+    checkWordSolved(swi);
+    if (wi !== swi) checkWordSolved(wi);
+    updateHUD(); updateSelStatus(); renderPool(); renderTargets(); return;
+  }
+  if (slotHasFrag) {
+    selection = { source: 'target', fragId: targetSlots[wi][si], wordIdx: wi, slotIdx: si };
+    updateSelStatus(); renderPool(); renderTargets();
+  }
+}
+
+// ══════════════════════════════════════════
+// SOLVE CHECK
+// ══════════════════════════════════════════
+function checkWordSolved(wi) {
+  if (solvedWords.has(wi)) return;
+  const slots = targetSlots[wi];
+  if (slots.some(s => s === null)) return;
+  const assembled = slots.map(fid => frags.find(f => f.id === fid).text).join('');
+  if (assembled === words[wi]) {
+    solvedWords.add(wi);
+    spawnConfetti(solvedWords.size === 10 ? 55 : 9);
+    if (solvedWords.size === 10) setTimeout(() => endGame(true), 700);
+  }
+}
+
+// ══════════════════════════════════════════
+// TIMER
+// ══════════════════════════════════════════
+function startTimer() {
+  updateTimerDisplay();
+  timerRef = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    document.getElementById('tbarFill').style.width = (timeLeft / 600 * 100) + '%';
+    if (timeLeft <= 0) { clearInterval(timerRef); endGame(false); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timeLeft/60), s = timeLeft % 60;
+  const el = document.getElementById('hudTimer');
+  el.textContent = `${m}:${String(s).padStart(2,'0')}`;
+  el.className   = 'hud-val';
+  if      (timeLeft <= 30) el.classList.add('danger');
+  else if (timeLeft <= 90) el.classList.add('warn');
+}
+
+function updateHUD() {
+  document.getElementById('hudSolved').textContent   = `${solvedWords.size}/10`;
+  document.getElementById('solvedCount').textContent = solvedWords.size;
+  const sc = document.getElementById('hudScore');
+  if (solvedWords.size > 0) { sc.textContent = timeLeft; sc.className = 'hud-val green'; }
+  else { sc.textContent = '—'; sc.className = 'hud-val'; }
+}
+
+// ══════════════════════════════════════════
+// SCORING + STARS (change 4)
+// ══════════════════════════════════════════
+function starsForScore(score) {
+  if (score <= 100) return 1;
+  if (score <= 200) return 2;
+  if (score <= 300) return 3;
+  if (score <= 400) return 4;
+  if (score <= 500) return 5;
+  return 6;  // 501–600
+}
+
+// ══════════════════════════════════════════
+// END GAME
+// ══════════════════════════════════════════
+function endGame(won) {
+  gameActive = false;
+  clearInterval(timerRef);
+
+  const score = won ? timeLeft : solvedWords.size * 30;
+  const stars = starsForScore(score);
+
+  document.getElementById('endKicker').textContent = won ? 'All Words Solved!' : "Time's Up";
+  document.getElementById('endTitle').innerHTML    = won ? '10 <span>WORDS</span>' : 'SO <span>CLOSE</span>';
+  document.getElementById('endSub').textContent    = won
+    ? `Exceptional! All 10 words cracked with ${fmt(timeLeft)} to spare.`
+    : `You solved ${solvedWords.size} of 10 words. Same puzzle runs until next hour.`;
+  document.getElementById('endScore').textContent  = score;
+  document.getElementById('endScore').className    = won ? 'end-score green' : 'end-score';
+  document.getElementById('endLabel').textContent  = won ? 'SECONDS REMAINING' : 'PARTIAL SCORE';
+
+  // Render stars (change 4)
+  const starsEl = document.getElementById('endStars');
+  starsEl.innerHTML = '';
+  for (let i = 1; i <= 6; i++) {
+    const s = document.createElement('span');
+    s.className   = 'star' + (i <= stars ? ' filled' : '');
+    s.textContent = '★';
+    starsEl.appendChild(s);
+  }
+
+  // Words reveal
+  const reveal = document.getElementById('wordsReveal');
+  reveal.innerHTML = '';
+  words.forEach((w, i) => {
+    const d = document.createElement('div');
+    d.className   = 'reveal-word' + (solvedWords.has(i) ? ' got' : '');
+    d.textContent = w;
+    reveal.appendChild(d);
+  });
+
+  // Share buttons (change 5)
+  const shareText = won
+    ? `I solved all 10 words in 10 WORDS with a score of ${score} — ${stars}⭐! Can you beat me?`
+    : `I scored ${score} points (${solvedWords.size}/10 words) in 10 WORDS. Give it a try!`;
+  const url     = encodeURIComponent(window.location.href);
+  const encoded = encodeURIComponent(shareText);
+  document.getElementById('shareFB').href  = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encoded}`;
+  document.getElementById('shareTW').href  = `https://twitter.com/intent/tweet?text=${encoded}&url=${url}`;
+  document.getElementById('shareWA').href  = `https://wa.me/?text=${encoded}%20${url}`;
+  document.getElementById('shareRD').href  = `https://reddit.com/submit?url=${url}&title=${encoded}`;
+  document.getElementById('shareCopy').onclick = () => {
+    navigator.clipboard.writeText(shareText + ' ' + window.location.href)
+      .then(() => {
+        const btn = document.getElementById('shareCopy');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy Link', 2200);
+      });
+  };
+
+  setTimeout(() => document.getElementById('endOverlay').classList.add('open'), 800);
+}
+
+function fmt(s) { const m=Math.floor(s/60),sec=s%60; return m>0?`${m}m ${sec}s`:`${sec}s`; }
+
+// ══════════════════════════════════════════
+// SELECTION STATUS
+// ══════════════════════════════════════════
+function updateSelStatus() {
+  const el = document.getElementById('selStatus');
+  if (!selection) {
+    el.className = 'sel-status';
+    el.innerHTML = '<span class="sel-hint">Click any fragment in the pool to select it, then click a word slot to place it</span>';
+    return;
+  }
+  const frag     = frags.find(f => f.id === selection.fragId);
+  const srcLabel = selection.source === 'pool' ? 'from pool' : 'from word slot';
+  el.className   = 'sel-status has-sel';
+  el.innerHTML   = `<span class="sel-preview">${frag.text}</span><span class="sel-hint">Selected (${srcLabel}) — click a slot to place it, or another tile to swap</span>`;
+}
+
+// ══════════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════════
+const CC = ['#c8f53c','#3ddc84','#f0a500','#e8e0d0','#60d8f0','#ff6b6b'];
+function spawnConfetti(n) {
+  for (let i = 0; i < n; i++) {
+    setTimeout(() => {
+      const c = document.createElement('div');
+      c.className = 'confetti';
+      const w = 4 + Math.floor(Math.random()*7), h = 4 + Math.floor(Math.random()*7);
+      c.style.cssText = `left:${Math.random()*100}vw;top:-14px;background:${CC[Math.floor(Math.random()*CC.length)]};width:${w}px;height:${h}px;--d:${0.8+Math.random()*0.9}s;--dl:${Math.random()*0.35}s;--r:${Math.random()*720-360}deg;transform:rotate(${Math.random()*360}deg)`;
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2200);
+    }, i * 35);
+  }
+}
+
+// ══════════════════════════════════════════
+// THEME TOGGLE (change 3)
+// ══════════════════════════════════════════
+(function() {
+  const THEME_KEY = 'tenwords_theme';
+  const html      = document.documentElement;
+  const btn       = document.getElementById('themeToggle');
+
+  function applyTheme(t) {
+    html.setAttribute('data-theme', t);
+    btn.textContent = t === 'dark' ? '☀' : '☾';
+    btn.title       = t === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+    try { localStorage.setItem(THEME_KEY, t); } catch(e) {}
+  }
+
+  let saved = 'dark'; // default: dark (change 3)
+  try { saved = localStorage.getItem(THEME_KEY) || 'dark'; } catch(e) {}
+  applyTheme(saved);
+
+  btn.addEventListener('click', () => {
+    applyTheme(html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+}());
+
+// Show seed on load
+document.getElementById('seedDisplay').textContent = '#' + getHourlySeed();
+</script>
+</body>
+</html>
