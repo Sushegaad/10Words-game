@@ -533,8 +533,9 @@ function initGame() {
   solution.forEach((parts, wi) => parts.forEach((text, pi) => frags.push({ id: `f${wi}_${pi}`, wordIdx: wi, partIdx: pi, text })));
 
   const shuffledIds = seededShuffle(frags.map(f => f.id), rng32(seed + 999));
-  poolRows          = Array.from({ length: 10 }, () => []);
-  shuffledIds.forEach((fid, i) => poolRows[i % 10].push(fid));
+  const numRows     = window.innerWidth <= 640 ? 5 : 10;  // mobile: 5 rows; desktop: 10 rows
+  poolRows          = Array.from({ length: numRows }, () => []);
+  shuffledIds.forEach((fid, i) => poolRows[i % numRows].push(fid));
   poolRows          = poolRows.map((row, ri) => seededShuffle(row, rng32(seed + ri + 500)));
   targetSlots       = solution.map(parts => parts.map(() => null));
 
@@ -557,6 +558,7 @@ function renderPool() {
 
   poolRows.forEach((rowFragIds, ri) => {
     const visible = rowFragIds.filter(fid => !inTarget.has(fid));
+    if (visible.length === 0 && window.innerWidth <= 640) return;  // mobile: collapse empty rows
     const row     = document.createElement('div');
     row.className = 'pool-row';
 
