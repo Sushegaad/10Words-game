@@ -4,7 +4,7 @@
 <meta name="google-site-verification" content="ngS8wu36B4P3ZyQBK7Q8rlwMd53-rFN55y8IFsFVApw" />
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>10 WORDS</title>
+<title>9 WORDS</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 /* ── THEME VARIABLES ── */
@@ -251,9 +251,9 @@ main{max-width:860px;margin:0 auto;padding:24px 20px 60px;position:relative;z-in
 <!-- START OVERLAY -->
 <div class="overlay open" id="startOverlay">
   <div class="modal">
-    <div class="modal-kicker">Hourly Word Puzzle — Medium · 10 Unique Lengths</div>
-    <div class="modal-title">10 <span>WORDS</span></div>
-    <div class="modal-sub">10 words, all fragments scrambled across every row. Pick fragments from the pool and place them into the word slots. Solve all 10 before time runs out.</div>
+    <div class="modal-kicker">Hourly Word Puzzle — Medium · 9 Unique Lengths</div>
+    <div class="modal-title">9 <span>WORDS</span></div>
+    <div class="modal-sub">9 words, all fragments scrambled across every row. Pick fragments from the pool and place them into the word slots. Solve all 9 before time runs out.</div>
     <div class="how-grid">
       <div class="how-item"><div class="how-n">1</div><div class="how-t">Click a fragment in the pool to select it</div></div>
       <div class="how-item"><div class="how-n">2</div><div class="how-t">Click an empty slot in the word panel to place it</div></div>
@@ -292,10 +292,10 @@ main{max-width:860px;margin:0 auto;padding:24px 20px 60px;position:relative;z-in
 
 <!-- HEADER -->
 <header>
-  <div class="logo">10 <span>WORDS</span></div>
+  <div class="logo">9 <span>WORDS</span></div>
   <div class="header-right">
     <div class="hud">
-      <div class="hud-item"><span class="hud-label">Solved</span><span class="hud-val neutral" id="hudSolved">0/10</span></div>
+      <div class="hud-item"><span class="hud-label">Solved</span><span class="hud-val neutral" id="hudSolved">0/9</span></div>
       <div class="hud-item"><span class="hud-label">Score</span><span class="hud-val" id="hudScore">—</span></div>
       <div class="hud-item"><span class="hud-label">Time</span><span class="hud-val" id="hudTimer">10:00</span></div>
     </div>
@@ -308,7 +308,7 @@ main{max-width:860px;margin:0 auto;padding:24px 20px 60px;position:relative;z-in
 <main>
   <div class="game-top">
     <span class="game-top-hint">Select a fragment · place it into a word slot below</span>
-    <span class="progress-text">Solved: <strong id="solvedCount">0</strong> / 10</span>
+    <span class="progress-text">Solved: <strong id="solvedCount">0</strong> / 9</span>
   </div>
   <div class="panels">
     <div class="pool-wrap">
@@ -504,7 +504,7 @@ let targetSlots = [];
 let solvedWords = new Set();
 let selection   = null;
 let dragState   = null;   // { source:'pool'|'target', fragId, wordIdx?, slotIdx? }
-let timeLeft    = 600;
+let timeLeft    = 900;
 let timerRef    = null;
 let gameActive  = false;
 
@@ -520,7 +520,7 @@ function initGame() {
 
   // Pick one word per length (6–15), then sort ascending by length (change 1)
   words = [];
-  for (let len = 6; len <= 15; len++) {
+  for (let len = 6; len <= 14; len++) {
     const candidates = [...new Set(WORDBANK.filter(w => w.length === len))];
     const shuffled   = seededShuffle(candidates, rng32(seed + len * 17));
     if (shuffled.length > 0) words.push(shuffled[0]);
@@ -533,7 +533,7 @@ function initGame() {
   solution.forEach((parts, wi) => parts.forEach((text, pi) => frags.push({ id: `f${wi}_${pi}`, wordIdx: wi, partIdx: pi, text })));
 
   const shuffledIds = seededShuffle(frags.map(f => f.id), rng32(seed + 999));
-  const numRows     = window.innerWidth <= 640 ? 5 : 10;  // mobile: 5 rows; desktop: 10 rows
+  const numRows     = window.innerWidth <= 640 ? 5 : 9;  // mobile: 5 rows; desktop: 9 rows
   poolRows          = Array.from({ length: numRows }, () => []);
   shuffledIds.forEach((fid, i) => poolRows[i % numRows].push(fid));
   poolRows          = poolRows.map((row, ri) => seededShuffle(row, rng32(seed + ri + 500)));
@@ -543,7 +543,7 @@ function initGame() {
   selection  = null;
   dragState  = null;
   gameActive = true;
-  timeLeft   = 600;
+  timeLeft   = 900;
 
   renderPool(); renderTargets(); updateHUD(); updateSelStatus(); startTimer();
 }
@@ -777,8 +777,8 @@ function checkWordSolved(wi) {
   const assembled = slots.map(fid => frags.find(f => f.id === fid).text).join('');
   if (assembled === words[wi]) {
     solvedWords.add(wi);
-    spawnConfetti(solvedWords.size === 10 ? 55 : 9);
-    if (solvedWords.size === 10) setTimeout(() => endGame(true), 700);
+    spawnConfetti(solvedWords.size === 9 ? 55 : 9);
+    if (solvedWords.size === 9) setTimeout(() => endGame(true), 700);
   }
 }
 
@@ -790,7 +790,7 @@ function startTimer() {
   timerRef = setInterval(() => {
     timeLeft--;
     updateTimerDisplay();
-    document.getElementById('tbarFill').style.width = (timeLeft / 600 * 100) + '%';
+    document.getElementById('tbarFill').style.width = (timeLeft / 900 * 100) + '%';
     if (timeLeft <= 0) { clearInterval(timerRef); endGame(false); }
   }, 1000);
 }
@@ -805,7 +805,7 @@ function updateTimerDisplay() {
 }
 
 function updateHUD() {
-  document.getElementById('hudSolved').textContent   = `${solvedWords.size}/10`;
+  document.getElementById('hudSolved').textContent   = `${solvedWords.size}/9`;
   document.getElementById('solvedCount').textContent = solvedWords.size;
   const sc = document.getElementById('hudScore');
   if (solvedWords.size > 0) { sc.textContent = timeLeft; sc.className = 'hud-val green'; }
@@ -835,10 +835,10 @@ function endGame(won) {
   const stars = starsForScore(score);
 
   document.getElementById('endKicker').textContent = won ? 'All Words Solved!' : "Time's Up";
-  document.getElementById('endTitle').innerHTML    = won ? '10 <span>WORDS</span>' : 'SO <span>CLOSE</span>';
+  document.getElementById('endTitle').innerHTML    = won ? '9 <span>WORDS</span>' : 'SO <span>CLOSE</span>';
   document.getElementById('endSub').textContent    = won
-    ? `Exceptional! All 10 words cracked with ${fmt(timeLeft)} to spare.`
-    : `You solved ${solvedWords.size} of 10 words. Same puzzle runs until next hour.`;
+    ? `Exceptional! All 9 words cracked with ${fmt(timeLeft)} to spare.`
+    : `You solved ${solvedWords.size} of 9 words. Same puzzle runs until next hour.`;
   document.getElementById('endScore').textContent  = score;
   document.getElementById('endScore').className    = won ? 'end-score green' : 'end-score';
   document.getElementById('endLabel').textContent  = won ? 'SECONDS REMAINING' : 'PARTIAL SCORE';
@@ -865,8 +865,8 @@ function endGame(won) {
 
   // Share buttons (change 5)
   const shareText = won
-    ? `I solved all 10 words in 10 WORDS with a score of ${score} — ${stars}⭐! Can you beat me?`
-    : `I scored ${score} points (${solvedWords.size}/10 words) in 10 WORDS. Give it a try!`;
+    ? `I solved all 9 words in 9 WORDS with a score of ${score} — ${stars}⭐! Can you beat me?`
+    : `I scored ${score} points (${solvedWords.size}/9 words) in 9 WORDS. Give it a try!`;
   const url     = encodeURIComponent(window.location.href);
   const encoded = encodeURIComponent(shareText);
   document.getElementById('shareFB').href  = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encoded}`;
