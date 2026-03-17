@@ -56,17 +56,4 @@ A daily browser-based word puzzle game. Nine words — each a different length �
 
 ---
 
-## File Structure
-
-```
-9Words/
-├── index.html       # Complete self-contained game (CSS + JS + word bank)
-├── README.md        # This file
-├── 9Words 01.png    # Screenshot – start screen
-├── 9Words 02.png    # Screenshot – in game
-└── 9Words 03.png    # Screenshot – score screen
-```
-
----
-
 *Created by Hemant Naik*
