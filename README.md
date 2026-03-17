@@ -7,15 +7,15 @@ A daily browser-based word puzzle game. Nine words — each a different length �
 ## Screenshots
 
 <p align="left">
-  <img src="9Words%2001.png" alt="9 Words – Start Screen" width="260">
+  <img src="9Words%2001.png" alt="9 Words – Start Screen" width="450">
 </p>
 
 <p align="left">
-  <img src="9Words%2002.png" alt="9 Words – In Game" width="260">
+  <img src="9Words%2002.png" alt="9 Words – In Game" width="450">
 </p>
 
 <p align="left">
-  <img src="9Words%2003.png" alt="9 Words – Score Screen" width="260">
+  <img src="9Words%2003.png" alt="9 Words – Score Screen" width="450">
 </p>
 
 ---
