@@ -1,6 +1,6 @@
 # 9 WORDS
 
-A daily browser-based word puzzle game. Nine words — each a different length — are broken into fragments and scrambled across the pool. Pick fragments and place them into the correct word slots. Solve all 9 before the timer runs out.
+A daily browser-based word puzzle game. Nine words — each a different length — are broken into fragments and scrambled across the pool. Pick fragments and place them into the correct word slots. Solve all 9 before the 15 minute timer runs out.
 
 ---
 
